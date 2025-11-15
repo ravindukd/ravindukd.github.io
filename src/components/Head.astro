@@ -19,6 +19,19 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const { title, description, image = "/favicon.png" } = Astro.props;
+
+const siteName = Astro.site ? new URL(Astro.site).hostname : canonicalURL.hostname;
+
+const ogUrl = canonicalURL.href;
+const ogImage = new URL(image, Astro.site).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": Astro.site ?? ogUrl,
+  "name": title,
+  "publisher": { "@type": "Organization", "name": siteName },
+};
 ---
 
 <!-- Global Metadata -->
@@ -43,17 +56,34 @@ const { title, description, image = "/favicon.png" } = Astro.props;
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={ogUrl} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:site_name" content={siteName} />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:url" content={ogUrl} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<meta property="twitter:image" content={ogImage} />
+
+<!-- Page indexing control and author info -->
+<meta name="robots" content="index, follow" />
+<meta name="author" content={siteName} />
+
+<!-- Theme & icons -->
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+
+<!-- RSS feed -->
+<link rel="alternate" type="application/rss+xml" title={`${title} - RSS`} href={new URL("/rss.xml", Astro.site).href} />
+
+<!-- Structured data -->
+<script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
 
 <ViewTransitions  />
 

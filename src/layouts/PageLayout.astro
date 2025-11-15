@@ -7,9 +7,10 @@ import { SITE } from "@consts";
 type Props = {
   title: string;
   description: string;
+  schema?: any;
 };
 
-const { title, description } = Astro.props;
+const { title, description, schema } = Astro.props;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -50,6 +51,7 @@ const jsonLd = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`https://avatars.githubusercontent.com/u/43919715?v=4`} />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {schema ? <script type="application/ld+json" set:html={JSON.stringify(schema)} /> : null}
   </head>
   <body>
     <Header />
